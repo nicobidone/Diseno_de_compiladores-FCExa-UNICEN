@@ -13,7 +13,39 @@ import java.util.List;
  * @author nicob
  */
 public class Estado {
-    private int id;
-    private List<Integer> estados = new ArrayList<>();
+    
+    private char idCaracter;
+    private List<Character> simboloAceptado = new ArrayList<>();
+    private List<Estado> siguientesEstados = new ArrayList<>();
+    
+    public Estado(char idCaracter){
+        this.idCaracter = idCaracter;
+    }
+    
+    public void addEstadoSiguiente(Estado siguiente){
+        this.siguientesEstados.add(siguiente);
+    }
+    
+    public void addEstadosSiguientes(List<Estado> siguientes){
+        for(Estado siguiente : siguientes){
+            this.addEstadoSiguiente(siguiente);
+        }        
+    }
+    
+    public Boolean isSiguiente(char car){
+        for (Character simbolo : simboloAceptado){
+            if (car == simbolo)
+                return true;
+        }
+        return false;
+    }
+    
+    public Estado getSiguiente(char car){
+        for (Estado estado : siguientesEstados){
+            if (estado.isSiguiente(car))
+                return estado;
+        }
+        return null;
+    }   
     
 }
