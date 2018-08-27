@@ -5,8 +5,8 @@
  */
 package main;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -15,35 +15,32 @@ import java.util.List;
 public class Estado {
     
     private char idCaracter;
-    private List<Character> simboloAceptado = new ArrayList<>();
-    private List<Estado> siguientesEstados = new ArrayList<>();
+    private Map<Character,Estado> siguientesEstados = new HashMap<>();
     
     public Estado(char idCaracter){
         this.idCaracter = idCaracter;
     }
     
-    public void addEstadoSiguiente(Estado siguiente){
-        this.siguientesEstados.add(siguiente);
+    public char getId(){
+        return this.idCaracter;
     }
     
-    public void addEstadosSiguientes(List<Estado> siguientes){
-        for(Estado siguiente : siguientes){
-            this.addEstadoSiguiente(siguiente);
-        }        
-    }
+    public void addEstadoSiguiente(Character car, Estado siguiente){
+        this.siguientesEstados.put(car, siguiente);
+    }        
     
-    public Boolean isSiguiente(char car){
-        for (Character simbolo : simboloAceptado){
-            if (car == simbolo)
-                return true;
+    private Boolean isSiguiente(char car){
+        if (siguientesEstados.containsKey(car)){
+            System.out.println("existe "+this.getId());
+            return true;
         }
+        System.out.println("no existe "+this.getId());
         return false;
     }
     
     public Estado getSiguiente(char car){
-        for (Estado estado : siguientesEstados){
-            if (estado.isSiguiente(car))
-                return estado;
+        if (this.isSiguiente(car)){
+            return siguientesEstados.get(car);
         }
         return null;
     }   
