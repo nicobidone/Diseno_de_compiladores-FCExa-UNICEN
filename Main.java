@@ -12,15 +12,24 @@ package main;
 public class Main {
     public static void main(String[] args) {
         
-        String cadena = "_textodeprueba";
-        Integer pos = 0;
+        Estado automata = new Estado('0');
+        Estado e1 = new Estado('1');
+        Estado e2 = new Estado('2');        
+        Estado ef = new Estado('f');
+        automata.addEstadoSiguiente('_', e1);
+        e1.addEstadoSiguiente('n', e2);
+        e1.addEstadoSiguiente('l', e2);
+        e2.addEstadoSiguiente('n', e2);
+        e2.addEstadoSiguiente('l', e2);
+        e2.addEstadoSiguiente('o', ef);
+        
+        String cadena = "_nlnllnnlnlox";
          
-        if (cadena.charAt(0) == '_'){
-            while (cadena.charAt(pos) >= 'a' && cadena.charAt(pos) <= 9){
-                
-            }
+        Estado pun = automata;
+        for (char car : cadena.toCharArray()){
+            System.out.print(car+" ");
+            pun = pun.getSiguiente(car);
         }
-                  
                 
     }
 }
