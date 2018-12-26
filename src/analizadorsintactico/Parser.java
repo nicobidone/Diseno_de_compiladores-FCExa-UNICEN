@@ -520,7 +520,7 @@ final static String yyrule[] = {
 "tipo : DOUBLE",
 };
 
-//#line 563 "gramatica.y"
+//#line 596 "gramatica.y"
 
 private AnalizadorLexico lexer;
 private TablaDeSimbolos symbolTable, vars, funs;
@@ -546,9 +546,9 @@ public void inicFUN(String val){
 	this.lista.ordenarFUN(this.closures);
 	//Chequeo los errores posibles
 	if (this.funs.isDeclarado(tk))
-		this.errores.add("LINEA: "+this.lineNumber+" - ERROR - Variable redeclarada");
+		this.errores.add("LINEA: "+pos+" - ERROR - Variable redeclarada");
 	else if (this.vars.isDeclarado(tk))
-		this.errores.add("LINEA: "+this.lineNumber+" - ERROR - Variable declarada como identificador");
+		this.errores.add("LINEA: "+pos+" - ERROR - Variable declarada como identificador");
 	else
 		this.funs.AgregarEntrada(tk);
 	//Seteo el tipo de la funcion como el del retorno
@@ -564,19 +564,19 @@ public Elemento getObject(Elemento obj){
 	
 public void compTipo(Elemento op1, Elemento op2, Integer lin){
 	if (!op1.getTipo().equals(op2.getTipo())){
-		errores.add("Linea: "+lin+" - ERROR: Tipos incompatibles "+op1.getTipo()+" <-> "+op2.getTipo());
+		errores.add("LINEA: "+lin+" - ERROR - Tipos incompatibles "+op1.getTipo()+" <-> "+op2.getTipo());
 	}
 }
 
 public void compDeclarado (Elemento op1, Elemento op2, Integer lin){
 	if (Token.class.getCanonicalName().equals(op1.getClass().getCanonicalName())
 		&& op1.getClase().equals("id") && !this.vars.isDeclarado((Token)op1)){
-			errores.add("Linea: "+lin+" - ERROR: Variable no declarada "
+			errores.add("LINEA: "+lin+" - ERROR - Variable no declarada "
 								+op1.getTipo()+" "+op1.toString());
 	}
 	if (Token.class.getCanonicalName().equals(op2.getClass().getCanonicalName()) 
 		&& op2.getClase().equals("id") && !this.vars.isDeclarado((Token)op2)){
-			errores.add("Linea: "+lin+" - ERROR: Variable no declarada "
+			errores.add("LINEA: "+lin+" - ERROR - Variable no declarada "
 								+op2.getTipo()+" "+op2.toString());
 	}        
 }
@@ -893,6 +893,18 @@ case 19:
 							resul = ((Numero)element.getOperando1()).getInicio();
 						element = this.lista.getElement(size);						
 					}
+					Token ter;
+					if (element.getOperando2().getClass().getCanonicalName().equals(Token.class.getCanonicalName())){
+						ter = (Token) element.getOperando2();
+						while (size > 0 && element.getOperando1() != ter){
+							size--;
+							if (element.getOperador().equals("R"))
+								resul = ((Numero)element.getOperando1()).getInicio();						
+							element = this.lista.getElement(size);
+						}
+						if (element.getOperador().equals("C"))
+							resul = ((Numero)element.getOperando2()).getInicio();
+					}
 					this.lista.agregar(new Terceto("C",this.f_ptr,new Numero(lista, resul)));
 				}
 				else
@@ -901,7 +913,7 @@ case 19:
 			}
 break;
 case 20:
-//#line 111 "gramatica.y"
+//#line 123 "gramatica.y"
 { 
 				resultado.add("LINEA: "+ val_peek(4).begin_line +" Sentencia de salida PRINT");
 				this.p_ptr = new Terceto("P",this.symbolTable.getToken(val_peek(2).sval),null);
@@ -909,23 +921,23 @@ case 20:
 			}
 break;
 case 21:
-//#line 116 "gramatica.y"
+//#line 128 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de salida PRINT"); }
 break;
 case 22:
-//#line 117 "gramatica.y"
+//#line 129 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de salida PRINT"); }
 break;
 case 23:
-//#line 118 "gramatica.y"
+//#line 130 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de salida PRINT"); }
 break;
 case 24:
-//#line 122 "gramatica.y"
+//#line 134 "gramatica.y"
 { pos = val_peek(0).begin_line; }
 break;
 case 25:
-//#line 127 "gramatica.y"
+//#line 139 "gramatica.y"
 { 
 				if (this.bfa_ptr == null)
 					this.bfa_ptr = bf_ptr;
@@ -945,19 +957,19 @@ case 25:
 			}
 break;
 case 26:
-//#line 144 "gramatica.y"
+//#line 156 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de control LOOP-UNTIL"); }
 break;
 case 27:
-//#line 145 "gramatica.y"
+//#line 157 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de control LOOP-UNTIL"); }
 break;
 case 28:
-//#line 146 "gramatica.y"
+//#line 158 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de control LOOP-UNTIL"); }
 break;
 case 29:
-//#line 151 "gramatica.y"
+//#line 163 "gramatica.y"
 { 
 				System.out.println("IF '(' condicion ')' bloque_sentencia END_IF ,");
 				resultado.add("LINEA: "+val_peek(4).begin_line + " Sentencia de seleccion IF-END_IF");
@@ -969,7 +981,7 @@ case 29:
 			}
 break;
 case 30:
-//#line 161 "gramatica.y"
+//#line 173 "gramatica.y"
 { 
 				System.out.println("IF '(' condicion ')' bloque_sentencia else bloque_sentencia END_IF ,");
 				resultado.add("LINEA: "+val_peek(6).begin_line + " Sentencia de seleccion IF-ELSE-END_IF");
@@ -984,33 +996,33 @@ case 30:
 			}
 break;
 case 31:
-//#line 173 "gramatica.y"
+//#line 185 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de seleccion IF-END_IF"); }
 break;
 case 32:
-//#line 174 "gramatica.y"
+//#line 186 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de seleccion IF-END_IF"); }
 break;
 case 33:
-//#line 175 "gramatica.y"
+//#line 187 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de seleccion IF-END_IF"); }
 break;
 case 34:
-//#line 176 "gramatica.y"
+//#line 188 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de seleccion IF-END_IF"); }
 break;
 case 35:
-//#line 177 "gramatica.y"
+//#line 189 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Sentencia de seleccion IF-END_IF"); }
 break;
 case 36:
-//#line 183 "gramatica.y"
+//#line 195 "gramatica.y"
 { 
 				System.out.println("{ bloque_sentencia sentencia_simple }");
 			}
 break;
 case 37:
-//#line 187 "gramatica.y"
+//#line 199 "gramatica.y"
 { 
 				System.out.println("sentencia_simple");
 				this.bfa_ptr = this.bf_ptr;
@@ -1019,7 +1031,7 @@ case 37:
 			}
 break;
 case 38:
-//#line 197 "gramatica.y"
+//#line 209 "gramatica.y"
 { 
 				System.out.println("sentencia_simple");
 				this.bfa_ptr = this.bf_ptr;
@@ -1028,28 +1040,28 @@ case 38:
 			}
 break;
 case 39:
-//#line 204 "gramatica.y"
+//#line 216 "gramatica.y"
 { 
 				System.out.println("{ bloque_sentencia sentencia_simple }");
 				this.bi_ptr = this.s_ptr;
 			}
 break;
 case 40:
-//#line 212 "gramatica.y"
+//#line 224 "gramatica.y"
 {
 				System.out.println("tipo lista_variable ,");
 				resultado.add("LINEA: " + pos  + " Sentencia declarativa");
 			}
 break;
 case 41:
-//#line 218 "gramatica.y"
+//#line 230 "gramatica.y"
 {
 				System.out.println("closure_funcion");
 				resultado.add("LINEA: " + pos + " Sentencia declarativa FUN");				
 			}
 break;
 case 42:
-//#line 226 "gramatica.y"
+//#line 238 "gramatica.y"
 {				
 				for (Token tk: this.declaraciones){
 					tk.setTipo(val_peek(2).sval);
@@ -1064,7 +1076,7 @@ case 42:
 			}
 break;
 case 43:
-//#line 242 "gramatica.y"
+//#line 254 "gramatica.y"
 { 
 				System.out.println("ID"); 
 				pos=val_peek(0).begin_line;				
@@ -1073,7 +1085,7 @@ case 43:
 			}
 break;
 case 44:
-//#line 249 "gramatica.y"
+//#line 261 "gramatica.y"
 { 
 				System.out.println("lista_variable ; ID"); 
 				pos=val_peek(0).begin_line;
@@ -1082,11 +1094,11 @@ case 44:
 			}
 break;
 case 45:
-//#line 255 "gramatica.y"
+//#line 267 "gramatica.y"
 { yyerror(val_peek(0).begin_line,"Lista de variables"); }
 break;
 case 46:
-//#line 260 "gramatica.y"
+//#line 272 "gramatica.y"
 {	
 				System.out.println("FUN closure");
 				Token tk = this.symbolTable.getToken(val_peek(10).sval);
@@ -1110,13 +1122,12 @@ case 46:
 			}
 break;
 case 47:
-//#line 282 "gramatica.y"
+//#line 294 "gramatica.y"
 {	
 				System.out.println("FUN closure");
 				Token tk = this.symbolTable.getToken(val_peek(9).sval);
 				tk.setTipo("fun");
 				if (this.cr_ptr == this.f_ptr)	
-					/*if (this.symbolTable.getToken($2.sval) == this.symbolTable.getToken($8.sval)) */
 					if(this.symbolTable.getToken(val_peek(9).sval) == this.cr_ptr){
 						this.bfa_ptr = this.bf_ptr;
 						System.out.println("->Autoretorno");
@@ -1134,43 +1145,43 @@ case 47:
 			}
 break;
 case 48:
-//#line 303 "gramatica.y"
+//#line 314 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure FUN"); }
 break;
 case 49:
-//#line 304 "gramatica.y"
+//#line 315 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure FUN"); }
 break;
 case 50:
-//#line 305 "gramatica.y"
+//#line 316 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure FUN"); }
 break;
 case 51:
-//#line 306 "gramatica.y"
+//#line 317 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure FUN"); }
 break;
 case 52:
-//#line 307 "gramatica.y"
+//#line 318 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure FUN"); }
 break;
 case 53:
-//#line 308 "gramatica.y"
+//#line 319 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure FUN"); }
 break;
 case 54:
-//#line 309 "gramatica.y"
+//#line 320 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure FUN"); }
 break;
 case 55:
-//#line 310 "gramatica.y"
+//#line 321 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure FUN"); }
 break;
 case 56:
-//#line 311 "gramatica.y"
+//#line 322 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure FUN"); }
 break;
 case 57:
-//#line 313 "gramatica.y"
+//#line 324 "gramatica.y"
 {
 				Token tk = ((Token)this.f_ptr);
 				tk.setTipo("fun");
@@ -1178,7 +1189,7 @@ case 57:
 			}
 break;
 case 58:
-//#line 322 "gramatica.y"
+//#line 333 "gramatica.y"
 {	
 				System.out.println("detecto un VOID closure");
 				this.pos = val_peek(5).begin_line;
@@ -1193,9 +1204,9 @@ case 58:
 				this.lista.ordenarVOID(this.closures);
 				/*Chequeo los errores posibles*/
 				if (this.funs.isDeclarado(tk))
-					this.errores.add("LINEA: "+this.lineNumber+" - ERROR - Variable redeclarada");
+					this.errores.add("LINEA: "+pos+" - ERROR - Variable redeclarada");
 				else if (this.vars.isDeclarado(tk))
-					this.errores.add("LINEA: "+this.lineNumber+" - ERROR - Variable declarada como identificador");
+					this.errores.add("LINEA: "+pos+" - ERROR - Variable declarada como identificador");
 				else
 					this.funs.AgregarEntrada(tk);
 				/*Seteo el tipo de la funcion como el del retorno*/
@@ -1203,54 +1214,55 @@ case 58:
 			}
 break;
 case 59:
-//#line 344 "gramatica.y"
+//#line 355 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure VOID"); }
 break;
 case 60:
-//#line 345 "gramatica.y"
+//#line 356 "gramatica.y"
 { yyerror(val_peek(1).begin_line,"Closure VOID"); }
 break;
 case 61:
-//#line 350 "gramatica.y"
+//#line 361 "gramatica.y"
 { 
 				this.cr_ptr = f_ptr;			
 			}
 break;
 case 62:
-//#line 354 "gramatica.y"
+//#line 365 "gramatica.y"
 {
 				this.cr_ptr = new Numero (this.lista,(Terceto)this.bf_ptr.getInicio());
 				this.bf_ptr = this.a_ptr;
 			}
 break;
 case 63:
-//#line 362 "gramatica.y"
+//#line 373 "gramatica.y"
 {	
 				System.out.println("sentencia_limitada");
-				this.bfa_ptr = this.s_ptr;
+				this.bfa_ptr = this.s_ptr;				
+				System.out.println("PASA POR ACA ----->"+this.s_ptr);
 			}
 break;
 case 64:
-//#line 367 "gramatica.y"
+//#line 379 "gramatica.y"
 {	
 				System.out.println("cuerpo sentencia_limitada");
 				this.bi_ptr = this.s_ptr;
 			}
 break;
 case 65:
-//#line 375 "gramatica.y"
+//#line 387 "gramatica.y"
 { 
 				System.out.println("sentencia_declarativa");				
 			}
 break;
 case 66:
-//#line 379 "gramatica.y"
+//#line 391 "gramatica.y"
 { 
 				System.out.println("sentencia_ejecutable");
 			}
 break;
 case 67:
-//#line 386 "gramatica.y"
+//#line 398 "gramatica.y"
 {	
 				System.out.println("id "+val_peek(2).sval+" ( )");
 				this.fa_ptr = this.f_ptr;
@@ -1259,11 +1271,11 @@ case 67:
 			}
 break;
 case 68:
-//#line 392 "gramatica.y"
+//#line 404 "gramatica.y"
 { yyerror(val_peek(0).begin_line,"Indentificador FUN"); }
 break;
 case 69:
-//#line 397 "gramatica.y"
+//#line 409 "gramatica.y"
 {
 				resultado.add("LINEA: " + val_peek(0).begin_line + " Asignacion ");
 				this.a_ptr = new Terceto(":=",this.symbolTable.getToken(val_peek(3).sval),this.getObject(this.e_ptr));
@@ -1275,28 +1287,47 @@ case 69:
 			}
 break;
 case 70:
-//#line 407 "gramatica.y"
+//#line 419 "gramatica.y"
 {
-				resultado.add("LINEA: " + val_peek(0).begin_line + " Asignacion ");
-				this.a_ptr = new Terceto(":=",this.getObject(this.fa_ptr),this.getObject(this.f_ptr));
-				((Token)this.fa_ptr).setTipo(this.f_ptr.getTipo());
-				this.lista.agregar((Terceto) this.a_ptr);
+				Token tk = (Token) fa_ptr;
+				if (this.funs.isDeclarado(tk))
+					this.errores.add("LINEA: "+pos+" - ERROR - Variable redeclarada");
+				else if (this.vars.isDeclarado(tk))
+					this.errores.add("LINEA: "+pos+" - ERROR - Variable declarada como identificador");
+				else{
+					this.funs.AgregarEntrada(tk);				
+					resultado.add("LINEA: " + val_peek(0).begin_line + " Asignacion ");				
+					
+					/*int size = this.lista.size()-1;*/
+					/*Terceto element = this.lista.getElement(size),*/
+					/*		resul=null;*/
+					/*while (size > 0 && element.getOperando1() != this.f_ptr){*/
+					/*	size--;*/
+					/*	if (element.getOperador().equals("R"))*/
+					/*		resul = ((Numero)element.getOperando1()).getInicio();*/
+					/*	element = this.lista.getElement(size);						*/
+					/*}                                        */
+					/*this.a_ptr = new Terceto(":=",this.getObject(this.f_ptr),new Numero(lista, resul));*/
+					
+					this.a_ptr = new Terceto(":=",this.getObject(this.fa_ptr),this.getObject(this.f_ptr));
+					this.lista.agregar((Terceto) this.a_ptr);
+				}
 			}
 break;
 case 71:
-//#line 413 "gramatica.y"
+//#line 444 "gramatica.y"
 { yyerror(val_peek(0).begin_line,"Asignacion"); }
 break;
 case 72:
-//#line 414 "gramatica.y"
+//#line 445 "gramatica.y"
 { yyerror(val_peek(0).begin_line,"Asignacion"); }
 break;
 case 73:
-//#line 415 "gramatica.y"
+//#line 446 "gramatica.y"
 { yyerror(val_peek(0).begin_line,"Asignacion"); }
 break;
 case 74:
-//#line 420 "gramatica.y"
+//#line 451 "gramatica.y"
 { 
 				System.out.println("expresion = expresion");
 				resultado.add("LINEA: " + this.lineNumber + " Comparacion ");
@@ -1308,15 +1339,15 @@ case 74:
 			}
 break;
 case 75:
-//#line 429 "gramatica.y"
+//#line 460 "gramatica.y"
 { yyerror(val_peek(0).begin_line,"Comparacion"); }
 break;
 case 76:
-//#line 430 "gramatica.y"
+//#line 461 "gramatica.y"
 { yyerror(val_peek(0).begin_line,"Comparacion"); }
 break;
 case 83:
-//#line 444 "gramatica.y"
+//#line 475 "gramatica.y"
 { 
 				System.out.println("detecto una expresion '+' termino");
 				compTipo(this.e_ptr,this.t_ptr,this.lineNumber);
@@ -1327,7 +1358,7 @@ case 83:
 			}
 break;
 case 84:
-//#line 453 "gramatica.y"
+//#line 484 "gramatica.y"
 { 
 				System.out.println("detecto una expresion '-' termino");
 				/*compTipo(this.e_ptr,this.t_ptr,this.lineNumber);*/
@@ -1338,7 +1369,7 @@ case 84:
 			}
 break;
 case 85:
-//#line 462 "gramatica.y"
+//#line 493 "gramatica.y"
 { 
 				System.out.println("detecto una termino");				
 				this.a_ptr = this.e_ptr;	/*REVISAR*/
@@ -1346,19 +1377,19 @@ case 85:
 			}
 break;
 case 86:
-//#line 467 "gramatica.y"
+//#line 498 "gramatica.y"
 { System.out.println("ERROR"); }
 break;
 case 87:
-//#line 468 "gramatica.y"
+//#line 499 "gramatica.y"
 { System.out.println("ERROR"); }
 break;
 case 88:
-//#line 469 "gramatica.y"
+//#line 500 "gramatica.y"
 { System.out.println("ERROR"); }
 break;
 case 89:
-//#line 473 "gramatica.y"
+//#line 505 "gramatica.y"
 { 	
 				System.out.println("termino * factor");				
 				compTipo(this.t_ptr,this.f_ptr,this.lineNumber);
@@ -1369,7 +1400,7 @@ case 89:
 			}
 break;
 case 90:
-//#line 482 "gramatica.y"
+//#line 514 "gramatica.y"
 { 
 				System.out.println("termino / factor");
 				compTipo(this.t_ptr,this.f_ptr,this.lineNumber);
@@ -1380,51 +1411,52 @@ case 90:
 			}
 break;
 case 91:
-//#line 491 "gramatica.y"
+//#line 523 "gramatica.y"
 { 
 				System.out.println("factor");
 				this.t_ptr = this.f_ptr;
 			}
 break;
 case 92:
-//#line 499 "gramatica.y"
+//#line 531 "gramatica.y"
 { 
 				System.out.println("id "+val_peek(0).sval);
 				this.f_ptr = this.symbolTable.getToken(val_peek(0).sval);
 			}
 break;
 case 93:
-//#line 505 "gramatica.y"
+//#line 537 "gramatica.y"
 { 
 				System.out.println("cte "+val_peek(0).sval);
-				this.f_ptr = this.symbolTable.getToken(val_peek(0).sval);
+				Token tk = this.symbolTable.getToken(val_peek(0).sval);
+				if (tk!=null)
+					this.f_ptr = tk;
 			}
 break;
 case 95:
-//#line 515 "gramatica.y"
+//#line 549 "gramatica.y"
 {
 				System.out.println("ENTERO");
 				Token token = this.symbolTable.getToken(val_peek(0).sval);
 				if (token.getLexema().equals("32768_i")){
 					this.symbolTable.AgregarEntrada(new Token("32767_i",token.getClase(),token.getValor(),token.getLinea()));
-					this.symbolTable.EliminarEntrada(token);
+					/*this.symbolTable.EliminarEntrada(token);*/
 				}
 			}
 break;
 case 96:
-//#line 524 "gramatica.y"
+//#line 558 "gramatica.y"
 {
 				System.out.println("DOBLE");		
 			}
 break;
 case 97:
-//#line 528 "gramatica.y"
+//#line 562 "gramatica.y"
 {	
 				System.out.println("-ENTERO");
 				Token token = this.symbolTable.getToken(val_peek(0).sval);
-				if (token.getLexema().equals("32768_i")){
-					this.symbolTable.AgregarEntrada(new Token("-32768_i",token.getClase(),token.getValor(),token.getLinea()));
-					this.symbolTable.EliminarEntrada(token);
+				if (token.getLexema().equals("32768_i")){					
+					this.symbolTable.AgregarEntrada(new Token("-32768_i",token.getClase(),token.getValor(),token.getLinea()));					
 				}
 				else{
 					Token tk = new Token("-"+token.getLexema(),token.getClase(),token.getValor(),token.getLinea());
@@ -1434,27 +1466,27 @@ case 97:
 			}
 break;
 case 98:
-//#line 542 "gramatica.y"
+//#line 575 "gramatica.y"
 {
 				System.out.println("-DOBLE");
 				Token token = this.symbolTable.getToken(val_peek(0).sval);
 				this.symbolTable.AgregarEntrada(new Token("-"+token.getLexema(),token.getClase(),token.getValor(),token.getLinea()));
-			
+				
 			}
 break;
 case 99:
-//#line 552 "gramatica.y"
+//#line 585 "gramatica.y"
 {
 				System.out.println("INTEGER");		
 			}
 break;
 case 100:
-//#line 556 "gramatica.y"
+//#line 589 "gramatica.y"
 {
 				System.out.println("DOUBLE");
 			}
 break;
-//#line 1381 "Parser.java"
+//#line 1413 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

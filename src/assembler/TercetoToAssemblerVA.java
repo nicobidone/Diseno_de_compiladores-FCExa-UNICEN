@@ -99,8 +99,15 @@ public class TercetoToAssemblerVA {
                     res = res + "@Label"+ ((Numero)element.getOperando1()).toInteger(lista)+":\n";
                 break;
                 case "R":
-                    res = res + "MOV @aux"+((Numero)element.getOperando1()).toInteger(lista)+", "+regLibre+" \n"
-                              + "RET\n";
+                    this.addAux(i,0);
+                    res = res //+ "MOV @aux"+((Numero)element.getOperando1()).toInteger(lista)+", "+regLibre+" \n"
+                            + "MOV AX, _zero"+"\n"
+                            + "ADD @aux"+i+", AX"+"\n"
+                            + "JZ @ret_next"+i+"\n"
+                            + "RET"+"\n"
+                            + "@ret_next"+i+":"+"\n"
+                            + "ADD @aux"+i+", 1"+"\n"
+                    ;
                 break;
                 case "C":
                     res = res + "CALL @Label"+((Numero)element.getOperando2()).toInteger(lista)+"\n";
@@ -115,10 +122,21 @@ public class TercetoToAssemblerVA {
     }
     
     private void addAux(int linea){
-        if (regLibre.equals("EAX"))
-            auxs = auxs + "@aux"+linea+" DD ?\n";
-        else
-            auxs = auxs + "@aux"+linea+" DW ?\n";
+        
+        if (!auxs.contains("@aux"+linea))
+            if (regLibre.equals("EAX"))
+                auxs = auxs + "@aux"+linea+" DD ?\n";
+            else
+                auxs = auxs + "@aux"+linea+" DW ?\n";
+    }
+    
+    private void addAux(int linea, int val){
+        
+        if (!auxs.contains("@aux"+linea))
+            if (regLibre.equals("EAX"))
+                auxs = auxs + "@aux"+linea+" DD "+val+"\n";
+            else
+                auxs = auxs + "@aux"+linea+" DW "+val+"\n";
     }
     
     private String getDoble(Terceto text, int linea, String op){
@@ -172,7 +190,13 @@ public class TercetoToAssemblerVA {
                         "ADD "+regLibre+", _zero\n"+
                         "JZ @Label_divzero\n"+
                         "MOV "+regLibre+", "+toString1+"\n"+                         
-                        op+" "+toString2+", "+regLibre+"\n"+
+                        //op+" "+toString2+", "+regLibre+"\n"+
+                        op+" "+toString2+"\n"+
+                        "MOV @aux"+linea+", "+regLibre+"\n";
+            case "MUL":
+                this.addAux(linea);                
+                return  "MOV "+regLibre+", "+toString1+"\n"+ 
+                        op+" "+toString2+"\n"+
                         "MOV @aux"+linea+", "+regLibre+"\n";
             default:
                 this.addAux(linea);                
@@ -216,7 +240,7 @@ public class TercetoToAssemblerVA {
                                 .replace("+", "ma")
                                     .replace("-", "me");
                 case "entero": 
-                    return "_"+token.getLexema().substring(0, token.getLexema().length()-2);
+                    return "_"+token.getLexema().substring(0, token.getLexema().length()-2).replace("-", "me");
                 case "id":
                     return "_"+token.getLexema();
                 case "string" : 

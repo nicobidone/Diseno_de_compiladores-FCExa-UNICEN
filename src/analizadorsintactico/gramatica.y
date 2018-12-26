@@ -98,6 +98,18 @@
 							resul = ((Numero)element.getOperando1()).getInicio();
 						element = this.lista.getElement(size);						
 					}
+					Token ter;
+					if (element.getOperando2().getClass().getCanonicalName().equals(Token.class.getCanonicalName())){
+						ter = (Token) element.getOperando2();
+						while (size > 0 && element.getOperando1() != ter){
+							size--;
+							if (element.getOperador().equals("R"))
+								resul = ((Numero)element.getOperando1()).getInicio();						
+							element = this.lista.getElement(size);
+						}
+						if (element.getOperador().equals("C"))
+							resul = ((Numero)element.getOperando2()).getInicio();
+					}
 					this.lista.agregar(new Terceto("C",this.f_ptr,new Numero(lista, resul)));
 				}
 				else
@@ -284,7 +296,6 @@
 				Token tk = this.symbolTable.getToken($2.sval);
 				tk.setTipo("fun");
 				if (this.cr_ptr == this.f_ptr)	
-					//if (this.symbolTable.getToken($2.sval) == this.symbolTable.getToken($8.sval)) 
 					if(this.symbolTable.getToken($2.sval) == this.cr_ptr){
 						this.bfa_ptr = this.bf_ptr;
 						System.out.println("->Autoretorno");
@@ -333,9 +344,9 @@
 				this.lista.ordenarVOID(this.closures);
 				//Chequeo los errores posibles
 				if (this.funs.isDeclarado(tk))
-					this.errores.add("LINEA: "+this.lineNumber+" - ERROR - Variable redeclarada");
+					this.errores.add("LINEA: "+pos+" - ERROR - Variable redeclarada");
 				else if (this.vars.isDeclarado(tk))
-					this.errores.add("LINEA: "+this.lineNumber+" - ERROR - Variable declarada como identificador");
+					this.errores.add("LINEA: "+pos+" - ERROR - Variable declarada como identificador");
 				else
 					this.funs.AgregarEntrada(tk);
 				//Seteo el tipo de la funcion como el del retorno
@@ -361,7 +372,8 @@
 		: sentencia_limitada
 			{	
 				System.out.println("sentencia_limitada");
-				this.bfa_ptr = this.s_ptr;
+				this.bfa_ptr = this.s_ptr;				
+				System.out.println("PASA POR ACA ----->"+this.s_ptr);
 			}
 		| closure_cuerpo sentencia_limitada
 			{	
@@ -405,10 +417,29 @@
 			}
 		| id_fun ASSIGN id_fun ','		
 			{
-				resultado.add("LINEA: " + $4.begin_line + " Asignacion ");
-				this.a_ptr = new Terceto(":=",this.getObject(this.fa_ptr),this.getObject(this.f_ptr));
-				((Token)this.fa_ptr).setTipo(this.f_ptr.getTipo());
-				this.lista.agregar((Terceto) this.a_ptr);
+				Token tk = (Token) fa_ptr;
+				if (this.funs.isDeclarado(tk))
+					this.errores.add("LINEA: "+pos+" - ERROR - Variable redeclarada");
+				else if (this.vars.isDeclarado(tk))
+					this.errores.add("LINEA: "+pos+" - ERROR - Variable declarada como identificador");
+				else{
+					this.funs.AgregarEntrada(tk);				
+					resultado.add("LINEA: " + val_peek(0).begin_line + " Asignacion ");				
+					
+					//int size = this.lista.size()-1;
+					//Terceto element = this.lista.getElement(size),
+					//		resul=null;
+					//while (size > 0 && element.getOperando1() != this.f_ptr){
+					//	size--;
+					//	if (element.getOperador().equals("R"))
+					//		resul = ((Numero)element.getOperando1()).getInicio();
+					//	element = this.lista.getElement(size);						
+					//}                                        
+					//this.a_ptr = new Terceto(":=",this.getObject(this.f_ptr),new Numero(lista, resul));
+					
+					this.a_ptr = new Terceto(":=",this.getObject(this.fa_ptr),this.getObject(this.f_ptr));
+					this.lista.agregar((Terceto) this.a_ptr);
+				}
 			}
 		| id_fun ASSIGN error ','		{ yyerror($4.begin_line,"Asignacion"); }
 		| ID ASSIGN error ',' 			{ yyerror($4.begin_line,"Asignacion"); }
@@ -467,6 +498,7 @@
 		| expresion '+' error 	{ System.out.println("ERROR"); }
 		| expresion '-' error 	{ System.out.println("ERROR"); }
 		| expresion error 		{ System.out.println("ERROR"); }
+	;
 	
 	termino
 		: termino '*' factor
@@ -504,7 +536,9 @@
 		| cte 						
 			{ 
 				System.out.println("cte "+$1.sval);
-				this.f_ptr = this.symbolTable.getToken($1.sval);
+				Token tk = this.symbolTable.getToken($1.sval);
+				if (tk!=null)
+					this.f_ptr = tk;
 			}
 		| id_fun	
 		
@@ -517,7 +551,7 @@
 				Token token = this.symbolTable.getToken($1.sval);
 				if (token.getLexema().equals("32768_i")){
 					this.symbolTable.AgregarEntrada(new Token("32767_i",token.getClase(),token.getValor(),token.getLinea()));
-					this.symbolTable.EliminarEntrada(token);
+					//this.symbolTable.EliminarEntrada(token);
 				}
 			}
 		| DOBLE
@@ -528,9 +562,8 @@
 			{	
 				System.out.println("-ENTERO");
 				Token token = this.symbolTable.getToken($2.sval);
-				if (token.getLexema().equals("32768_i")){
-					this.symbolTable.AgregarEntrada(new Token("-32768_i",token.getClase(),token.getValor(),token.getLinea()));
-					this.symbolTable.EliminarEntrada(token);
+				if (token.getLexema().equals("32768_i")){					
+					this.symbolTable.AgregarEntrada(new Token("-32768_i",token.getClase(),token.getValor(),token.getLinea()));					
 				}
 				else{
 					Token tk = new Token("-"+token.getLexema(),token.getClase(),token.getValor(),token.getLinea());
@@ -543,7 +576,7 @@
 				System.out.println("-DOBLE");
 				Token token = this.symbolTable.getToken($2.sval);
 				this.symbolTable.AgregarEntrada(new Token("-"+token.getLexema(),token.getClase(),token.getValor(),token.getLinea()));
-			
+				
 			}
 	;
 	
@@ -585,9 +618,9 @@ public void inicFUN(String val){
 	this.lista.ordenarFUN(this.closures);
 	//Chequeo los errores posibles
 	if (this.funs.isDeclarado(tk))
-		this.errores.add("LINEA: "+this.lineNumber+" - ERROR - Variable redeclarada");
+		this.errores.add("LINEA: "+pos+" - ERROR - Variable redeclarada");
 	else if (this.vars.isDeclarado(tk))
-		this.errores.add("LINEA: "+this.lineNumber+" - ERROR - Variable declarada como identificador");
+		this.errores.add("LINEA: "+pos+" - ERROR - Variable declarada como identificador");
 	else
 		this.funs.AgregarEntrada(tk);
 	//Seteo el tipo de la funcion como el del retorno
@@ -603,19 +636,19 @@ public Elemento getObject(Elemento obj){
 	
 public void compTipo(Elemento op1, Elemento op2, Integer lin){
 	if (!op1.getTipo().equals(op2.getTipo())){
-		errores.add("Linea: "+lin+" - ERROR: Tipos incompatibles "+op1.getTipo()+" <-> "+op2.getTipo());
+		errores.add("LINEA: "+lin+" - ERROR - Tipos incompatibles "+op1.getTipo()+" <-> "+op2.getTipo());
 	}
 }
 
 public void compDeclarado (Elemento op1, Elemento op2, Integer lin){
 	if (Token.class.getCanonicalName().equals(op1.getClass().getCanonicalName())
 		&& op1.getClase().equals("id") && !this.vars.isDeclarado((Token)op1)){
-			errores.add("Linea: "+lin+" - ERROR: Variable no declarada "
+			errores.add("LINEA: "+lin+" - ERROR - Variable no declarada "
 								+op1.getTipo()+" "+op1.toString());
 	}
 	if (Token.class.getCanonicalName().equals(op2.getClass().getCanonicalName()) 
 		&& op2.getClase().equals("id") && !this.vars.isDeclarado((Token)op2)){
-			errores.add("Linea: "+lin+" - ERROR: Variable no declarada "
+			errores.add("LINEA: "+lin+" - ERROR - Variable no declarada "
 								+op2.getTipo()+" "+op2.toString());
 	}        
 }

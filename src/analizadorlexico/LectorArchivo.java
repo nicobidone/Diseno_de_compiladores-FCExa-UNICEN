@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package analizadorlexico;
-import java.awt.List;
+
 import java.io.*;
 /**
  *

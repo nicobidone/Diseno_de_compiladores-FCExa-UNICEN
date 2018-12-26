@@ -191,7 +191,7 @@
         <Component class="javax.swing.JTextPane" name="jTP_editor">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="&#xa;    &quot;integer _var;\n&quot; +&#xa;    &quot;_var := 3_i,\n&quot; +&#xa;    &quot;_var := _var - 123_i,\n&quot; +&#xa;    &quot;_var := _var - - 123_i,&quot;&#xa;    " type="code"/>
+              <Connection code="&#xa;    &quot;#TP3_TP2_16#\n&quot; +&#xa;&quot;#Colocada una selecci&#xf3;n para verificar el resultado de las expresiones y conversiones#\n&quot; +&#xa;&quot;\n&quot; +&#xa;&quot;integer _var,\n&quot; +&#xa;&quot;_var := 3_i,\n&quot; +&#xa;&quot;_var := _var - 123_i,\n&quot; +&#xa;&quot;_var := _var - - 123_i,\n&quot; +&#xa;&quot;if ( _var = 3_i)\n&quot; +&#xa;&quot;&#x9;print(&apos;iguales&apos;),&quot;&#xa;    " type="code"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>

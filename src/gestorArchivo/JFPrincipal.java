@@ -75,10 +75,15 @@ public class JFPrincipal extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTA_consola);
 
         jTP_editor.setText(
-            "integer _var;\n" +
+            "#TP3_TP2_16#\n" +
+            "#Colocada una selección para verificar el resultado de las expresiones y conversiones#\n" +
+            "\n" +
+            "integer _var,\n" +
             "_var := 3_i,\n" +
             "_var := _var - 123_i,\n" +
-            "_var := _var - - 123_i,"
+            "_var := _var - - 123_i,\n" +
+            "if ( _var = 3_i)\n" +
+            "	print('iguales'),"
         );
         jTP_editor.setToolTipText("");
         jSP_editor.setViewportView(jTP_editor);
@@ -311,14 +316,21 @@ public class JFPrincipal extends javax.swing.JFrame {
         jTA_consola.setText(
         "\n"+
         "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"+
-        "______________________________________________________________\n"+
-        "ETAPA DE PRECOMPILACIÓN. ERRORES SEMÁNTICOS. TERCETOS\n"+
-        "______________________________________________________________\n"+
-        "ERRORES SEMÁNTICOS\n\n"+
-        errores.get() +
-        "______________________________________________________________\n"+
-        "TERCETOS\n\n"+
-        lista.toString());    
+        "______________________________________________________________\n");
+        if(errores.get().equals(""))
+            jTA_consola.setText(jTA_consola.getText()+
+            "ETAPA DE PRECOMPILACIÓN.\n"+
+            "______________________________________________________________\n"+
+            "TERCETOS\n\n"+
+            lista.toString()
+        );
+        else
+            jTA_consola.setText(
+            "ETAPA DE PRECOMPILACIÓN.\n"+
+            "______________________________________________________________\n"+
+            "ERRORES SEMÁNTICOS\n\n"+
+            errores.get()
+            );    
     }//GEN-LAST:event_jM_tercetosMouseClicked
 
     private void jMI_guardar_consolaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMI_guardar_consolaActionPerformed
@@ -376,14 +388,15 @@ public class JFPrincipal extends javax.swing.JFrame {
         TercetoToAssemblerVA tta = new TercetoToAssemblerVA(lista);
         String codigo=tta.tercetoToAssembler();
         String consola = text+"\n"+data+codigo+
+                "JMP @LabelEND\n" +
                 "@Label_divzero:\n" +
-                "invoke MessageBox, NULL, mensaje_division_cero, mensaje_division_cero, MB_OK\n" +
+                "invoke MessageBox, NULL, addr mensaje_division_cero, addr mensaje_division_cero, MB_OK\n" +
                 "JMP @LabelEND\n"+
                 "@Label_ovfmul:\n" +
-                "invoke MessageBox, NULL, mensaje_overflow_producto, mensaje_overflow_producto, MB_OK\n" +
+                "invoke MessageBox, NULL, addr mensaje_overflow_producto, addr mensaje_overflow_producto, MB_OK\n" +
                 "JMP @LabelEND\n"+
                 "@Label_ovfadd:\n" +
-                "invoke MessageBox, NULL, mensaje_overflow_suma, mensaje_overflow_suma, MB_OK\n" +
+                "invoke MessageBox, NULL, addr mensaje_overflow_suma, addr mensaje_overflow_suma, MB_OK\n" +
                 "@LabelEND:\n"+
                 "end start";
         jTA_consola.setText(consola);

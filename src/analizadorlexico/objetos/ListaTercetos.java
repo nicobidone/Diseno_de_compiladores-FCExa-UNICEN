@@ -5,8 +5,6 @@
  */
 package analizadorlexico.objetos;
 
-import analizadorlexico.objetos.Numero;
-import analizadorlexico.objetos.Terceto;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,7 +105,18 @@ public class ListaTercetos {
             this.eliminar(elem1);
             
             ListaTercetos aux = new ListaTercetos();
-            Integer limit = ((Numero)elem1.getOperando2()).toInteger();
+            Integer limit = ((Numero)elem1.getOperando2()).toInteger(),limit2=-1;
+            Terceto ter = null;
+            if (limit-1 > -1)
+                ter = this.getElement(limit-1);
+            if (ter != null && ter.getOperando1().getClass().getCanonicalName().equals(Numero.class.getCanonicalName())){
+                limit2=((Numero)ter.getOperando1()).toInteger();
+            }
+            if (limit2 > -1 && limit2 < limit && limit2 < limit-1)
+                limit = limit2;
+            else if (limit2 < limit-1 && limit - 2 > 0)
+                limit=-2;            
+            
             while (this.size() > 0 && this.size() > limit){
                 
                 aux.agregar(this.getTope());
